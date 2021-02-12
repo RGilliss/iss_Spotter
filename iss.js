@@ -44,7 +44,7 @@ const fetchISSFlyOverTimes = (coords, flyCallback) => {
       return flyCallback(Error(msg), null);
     }
     const flyOver = JSON.parse(body).response;
-    flyCallback(flyOver);
+    flyCallback(null, flyOver);
   });
 };
 
@@ -52,19 +52,18 @@ const fetchISSFlyOverTimes = (coords, flyCallback) => {
 const nextISSTimesForMyLocation = (chainCallback) => {
   fetchMyIP((error, ip) => {
     if (error) {
-      return chainCallback('1:',error, null);
+      return chainCallback(error, null);
     }
     fetchCoordsByIP(ip, (error, coordinates) => {
       if (error) {
-        return chainCallback("2:",error, null);
+        return chainCallback(error, null);
       }
       
       fetchISSFlyOverTimes(coordinates, (error, pass) => {
-        // if (error) {
-        //   console.log(error);
-        //   return chainCallback("3:", error, null);
-        // }
-        chainCallback(null, error);
+        if (error) {
+          return chainCallback(error, null);
+        }
+        chainCallback(null, pass);
       });
     });
   });
